@@ -16,8 +16,7 @@ RUN set -eux; \
     && tar -xzf phpcollab.tar.gz -C /var/www/ \
     && rm phpcollab.tar.gz \
     # Set the necessary permissions for phpCollab folders
-	&& chmod -R 777 /var/www/phpcollab/files \
-	&& chmod -R 777 /var/www/phpcollab/logos_clients \
-	&& chmod -R 777 /var/www/phpcollab/logs \
-	&& chmod -R 777 /var/www/phpcollab/includes
-
+    && chmod -R 777 /var/www/phpcollab/files \
+    && chmod -R 777 /var/www/phpcollab/logos_clients \
+    && chmod -R 777 /var/www/phpcollab/logs \
+    && chmod -R 777 /var/www/phpcollab/includes
