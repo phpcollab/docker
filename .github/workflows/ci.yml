@@ -20,8 +20,6 @@ jobs:
           chmod +x bashbrew
           export GITHUB_REPOSITORY=phpcollab
           export PATH=".:$PATH"
-          ./generate-stackbrew-library.sh > phpcollab
-          cat phpcollab
           strategy="$(./generate.sh)"
           jq . <<<"$strategy" # sanity check / debugging aid
           echo "::set-output name=strategy::$strategy"
