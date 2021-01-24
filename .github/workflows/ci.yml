@@ -16,9 +16,8 @@ jobs:
       - name: Generate Jobs
         env:
           GITHUB_REPOSITORY: phpcollab
-          PATH: ".:$PATH"
+          # PATH: ".:$PATH"
         run: |
-          apt install -y curl
           curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
           chmod +x bashbrew
           strategy="$(./generate.sh)"
