@@ -18,6 +18,7 @@ jobs:
           PATH: ".:$PATH"
           GITHUB_REPOSITORY: phpcollab
         run: |
+          apt-get install -y curl jq
           curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
           chmod +x bashbrew
 
