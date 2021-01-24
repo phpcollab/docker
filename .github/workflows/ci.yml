@@ -18,10 +18,9 @@ jobs:
           GITHUB_REPOSITORY: phpcollab
           PATH: ".:$PATH"
         run: |
-          sudo apt-get install curl
+          apt install -y curl
           curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
           chmod +x bashbrew
-
           strategy="$(./generate.sh)"
           jq . <<<"$strategy" # sanity check / debugging aid
           echo "::set-output name=strategy::$strategy"
