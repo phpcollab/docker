@@ -33,7 +33,7 @@ if ! bashbrew from ./"$image" &> /dev/null; then
 	bashbrew from ./"$image" > /dev/null
 fi
 
-tags="$(bashbrew list --build-order --uniq "$image")"
+tags="$(bashbrew list --build-order --uniq ./"$image")"
 
 # see https://github.com/docker-library/python/commit/6b513483afccbfe23520b1f788978913e025120a for the ideal of what this would be (minimal YAML in all 30+ repos, shared shell script that outputs fully dynamic steps list), if GitHub Actions were to support a fully dynamic steps list
 
@@ -54,7 +54,7 @@ for tag in $tags; do
 				"constraints": {{- json $e.Constraints -}},
 				"froms": {{- json ($.ArchDockerFroms $arch $e) -}}
 			{{- "}" -}}
-		' "$bashbrewImage" | jq -c '
+		' ./"$bashbrewImage" | jq -c '
 			{
 				name: .name,
 				os: (
@@ -73,7 +73,7 @@ for tag in $tags; do
 				runs: {
 					build: (
 						[
-							"docker build"
+							"docker buildx build --pull --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64"
 						]
 						+ (
 							.tags
@@ -98,31 +98,8 @@ for tag in $tags; do
 		'
 	)"
 
-	parent="$(bashbrew parents "$bashbrewImage" | tail -1)" # if there ever exists an image with TWO parents in the same repo, this will break :)
-	if [ -n "$parent" ]; then
-		parentBashbrewImage="${parent##*/}" # account for BASHBREW_NAMESPACE being set
-		parent="$(bashbrew list --uniq "$parentBashbrewImage")" # normalize
-		parentMeta="${metas["$parent"]}"
-		parentMeta="$(jq -c --argjson meta "$meta" '
-			. + {
-				name: (.name + ", " + $meta.name),
-				os: (if .os == $meta.os then .os else "invalid-os-chain--" + .os + "+" + $meta.os end),
-				meta: { entries: (.meta.entries + $meta.meta.entries) },
-				runs: (
-					.runs
-					| to_entries
-					| map(
-						.value += "\n" + $meta.runs[.key]
-					)
-					| from_entries
-				),
-			}
-		' <<<"$parentMeta")"
-		metas["$parent"]="$parentMeta"
-	else
-		metas["$tag"]="$meta"
-		order+=( "$tag" )
-	fi
+	metas["$tag"]="$meta"
+	order+=( "$tag" )	
 done
 
 strategy="$(
@@ -175,7 +152,6 @@ strategy="$(
 						end
 					)
 				] | join("\n")),
-				pull: ([ .meta.froms[] | select(. != "scratch") | "docker pull " + @sh ] | join("\n")),
 				# build
 				# history
 				# test

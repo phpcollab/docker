@@ -41,15 +41,13 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build images
-        run: |
-          docker buildx build --pull --push \
-          --build-arg PHPVERSION=7.4 \
-          --build-arg VARIANT=apache \
-          --platform linux/arm/v7,linux/arm64/v8,linux/amd64 \
-          --tag phpcollab/phpcollab:latest \
-          --tag phpcollab/phpcollab:2 \
-          --tag phpcollab/phpcollab:2.8 \
-          --tag phpcollab/phpcollab:2.8.1 \
-          --tag phpcollab/phpcollab:2.8.1-apache \
-          .
+      - name: Prepare Environment
+        run: ${{ matrix.runs.prepare }}
+      - name: Build ${{ matrix.name }}
+        run: ${{ matrix.runs.build }}
+      - name: History ${{ matrix.name }}
+        run: ${{ matrix.runs.history }}
+      - name: Test ${{ matrix.name }}
+        run: ${{ matrix.runs.test }}
+      - name: '"docker images"'
+        run: ${{ matrix.runs.images }}
