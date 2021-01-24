@@ -7,7 +7,7 @@ image="${GITHUB_REPOSITORY##*/}" # "python", "golang", etc
 
 tmp="$(mktemp -d)"
 trap "$(printf 'rm -rf %q' "$tmp")" EXIT
-echo 1
+
 if ! command -v bashbrew &> /dev/null; then
 	dir="$(readlink -f "$BASH_SOURCE")"
 	dir="$(dirname "$dir")"
@@ -20,21 +20,21 @@ if ! command -v bashbrew &> /dev/null; then
 	export PATH="$dir/bin:$PATH"
 	bashbrew --version > /dev/null
 fi
-echo 2
+
 mkdir "$tmp/library"
 export BASHBREW_LIBRARY="$tmp/library"
 
 eval "${GENERATE_STACKBREW_LIBRARY:-./generate-stackbrew-library.sh}" > "$BASHBREW_LIBRARY/$image"
-ls "$BASHBREW_LIBRARY/$image"
+
 # if we don't appear to be able to fetch the listed commits, they might live in a PR branch, so we should force them into the Bashbrew cache directly to allow it to do what it needs
 if ! bashbrew from ./"$image" &> /dev/null; then
 	bashbrewGit="${BASHBREW_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/bashbrew}/git"
 	git -C "$bashbrewGit" fetch --quiet --update-shallow "$PWD" HEAD > /dev/null
 	bashbrew from ./"$image" > /dev/null
 fi
-echo 3
+
 tags="$(bashbrew list --build-order --uniq ./"$image")"
-echo 4
+
 # see https://github.com/docker-library/python/commit/6b513483afccbfe23520b1f788978913e025120a for the ideal of what this would be (minimal YAML in all 30+ repos, shared shell script that outputs fully dynamic steps list), if GitHub Actions were to support a fully dynamic steps list
 
 order=()
@@ -101,7 +101,7 @@ for tag in $tags; do
 	metas["$tag"]="$meta"
 	order+=( "$tag" )	
 done
-echo 5
+
 strategy="$(
 	for tag in "${order[@]}"; do
 		jq -c '
@@ -165,7 +165,7 @@ strategy="$(
 		}
 	'
 )"
-echo 6
+
 if [ -t 1 ]; then
 	jq <<<"$strategy"
 else
