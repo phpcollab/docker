@@ -13,17 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Installing prereqs
+      - name: Generate Jobs
         env:
-          PATH: ".:$PATH"
           GITHUB_REPOSITORY: phpcollab
         run: |
-          apt-get install -y curl jq
-          curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
-          chmod +x bashbrew
-
-      - name: Generate Jobs
-        run: |
+          git clone --depth 1 https://github.com/docker-library/bashbrew.git -b master ~/bashbrew
           strategy="$(~/bashbrew/scripts/github-actions/generate.sh)"
           jq . <<<"$strategy" # sanity check / debugging aid
           echo "::set-output name=strategy::$strategy"
