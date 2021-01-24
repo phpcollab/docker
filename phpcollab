@@ -1,0 +1,11 @@
+Maintainers: phpCollab Team <corretto-team@amazon.com> (@phpcollab),
+             John Gasper <jtgasper3@gmail.com> (@jtgasper3)
+GitRepo: https://github.com/phpcollab/docker.git
+GitFetch: refs/heads/master
+GitCommit: 7d52a786e5b6b06db7f66c085736ad44e6be5814
+
+Tags: 2, 2.8, 2.8.1, 2.8.1-apache, latest
+Architectures: amd64, arm32v7, arm64v8
+
+Tags: 2-fpm, 2.8-fpm, 2.8.1-fpm
+Architectures: amd64, arm32v7, arm64v8

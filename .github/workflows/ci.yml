@@ -1,10 +1,28 @@
-name: ci
+name: Build and Publish
 
 on:
   push:
 
 jobs:
-  buildx:
+  generate-jobs:
+    name: Generate the jobs
+    runs-on: ubuntu-latest
+    outputs:
+      strategy: ${{ steps.generate-jobs.outputs.strategy }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Generate Jobs
+        run: |
+          strategy="$(~/bashbrew/scripts/github-actions/generate.sh)"
+          jq . <<<"$strategy" # sanity check / debugging aid
+          echo "::set-output name=strategy::$strategy"
+
+  build:
+    name: ${{ matrix.name }}
+    needs: generate-jobs
+    strategy: ${{ fromJson(needs.generate-jobs.outputs.strategy) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,7 +41,7 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Build
+      - name: Build images
         run: |
           docker buildx build --pull --push \
           --build-arg PHPVERSION=7.4 \
