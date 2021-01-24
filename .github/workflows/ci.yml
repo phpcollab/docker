@@ -20,6 +20,7 @@ jobs:
           curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
           chmod +x bashbrew
           export PATH=".:$PATH"
+          ./generate-stackbrew-library.sh > phpcollab
           strategy="$(./generate.sh)"
           jq . <<<"$strategy" # sanity check / debugging aid
           echo "::set-output name=strategy::$strategy"
