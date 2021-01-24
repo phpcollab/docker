@@ -78,7 +78,7 @@ for tag in $tags; do
 						+ (
 							.tags
 							| map(
-								"--tag " + (. | @sh)
+								"--tag phpcollab/" + (. | @sh)
 							)
 						)
 						+ if .file != "Dockerfile" then
