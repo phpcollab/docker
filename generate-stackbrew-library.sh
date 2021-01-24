@@ -40,9 +40,7 @@ dirCommit() {
 }
 
 cat <<-EOH
-# this file is generated via https://github.com/docker-library/wordpress/blob/$(fileCommit "$self")/$self
-
-Maintainers: phpCollab Team <corretto-team@amazon.com> (@phpcollab),
+Maintainers: phpCollab Team (@phpcollab),
              John Gasper <jtgasper3@gmail.com> (@jtgasper3)
 GitRepo: https://github.com/phpcollab/docker.git
 Architectures: amd64, arm32v7, arm64v8

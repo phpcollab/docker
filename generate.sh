@@ -91,6 +91,8 @@ for tag in $tags; do
 						]
 						| join(" ")
 					),
+					history: ("docker history " + (.tags[0] | @sh)),
+					test: ("~/oi/test/run.sh " + (.tags[0] | @sh)),
 				},
 			}
 		'
@@ -151,6 +153,8 @@ strategy="$(
 					)
 				] | join("\n")),
 				# build
+				# history
+				# test
 				images: "docker image ls --filter since=image-list-marker",
 			}
 		' <<<"${metas["$tag"]}"
