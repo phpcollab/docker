@@ -39,22 +39,6 @@ dirCommit() {
 	)
 }
 
-getArches() {
-	local repo="$1"; shift
-	local officialImagesUrl='https://github.com/docker-library/official-images/raw/master/library/'
-
-	eval "declare -g -A parentRepoToArches=( $(
-		find -name 'Dockerfile' -exec awk '
-				toupper($1) == "FROM" && $2 !~ /^('"$repo"'|scratch|.*\/.*)(:|$)/ {
-					print "'"$officialImagesUrl"'" $2
-				}
-			' '{}' + \
-			| sort -u \
-			| xargs bashbrew cat --format '[{{ .RepoName }}:{{ .TagName }}]="{{ join " " .TagEntry.Architectures }}"'
-	) )"
-}
-getArches 'wordpress'
-
 cat <<-EOH
 # this file is generated via https://github.com/docker-library/wordpress/blob/$(fileCommit "$self")/$self
 
@@ -141,12 +125,10 @@ for version; do
 			fi
 
 			variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$dir/Dockerfile")"
-			variantArches="${parentRepoToArches[$variantParent]}"
-
+			
 			echo
 			cat <<-EOE
 				Tags: $(join ', ' "${fullAliases[@]}")
-				# Architectures: $(join ', ' $variantArches)
 				# GitCommit: $commit
 				Directory: $dir
 			EOE

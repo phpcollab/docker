@@ -21,8 +21,11 @@ jobs:
           chmod +x bashbrew
           export PATH=".:$PATH"
           ./generate-stackbrew-library.sh > phpcollab
+          echo h1
           cat phpcollab
+          echo h2
           strategy="$(./generate.sh)"
+          echo h3
           jq . <<<"$strategy" # sanity check / debugging aid
           echo "::set-output name=strategy::$strategy"
 
