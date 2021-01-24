@@ -15,11 +15,10 @@ jobs:
 
       - name: Generate Jobs
         id: generate-jobs
-        env:
-          GITHUB_REPOSITORY: phpcollab
         run: |
           curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
           chmod +x bashbrew
+          export GITHUB_REPOSITORY=phpcollab
           export PATH=".:$PATH"
           ./generate-stackbrew-library.sh > phpcollab
           cat phpcollab
