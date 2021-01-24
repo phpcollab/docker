@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Installing prereqs
         env:
           PATH: ".:$PATH"
           GITHUB_REPOSITORY: phpcollab
