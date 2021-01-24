@@ -52,9 +52,9 @@ jobs:
         run: ${{ matrix.runs.prepare }}
       - name: Build ${{ matrix.name }}
         run: ${{ matrix.runs.build }}
-      - name: History ${{ matrix.name }}
-        run: ${{ matrix.runs.history }}
-      - name: Test ${{ matrix.name }}
-        run: ${{ matrix.runs.test }}
+      # - name: History ${{ matrix.name }}
+      #   run: ${{ matrix.runs.history }}
+      # - name: Test ${{ matrix.name }}
+      #   run: ${{ matrix.runs.test }}
       - name: '"docker images"'
         run: ${{ matrix.runs.images }}
