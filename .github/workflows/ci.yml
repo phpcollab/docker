@@ -12,6 +12,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        env:
+          PATH: ".:$PATH"
+          GITHUB_REPOSITORY: phpcollab
+        run: |
+          curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
+          chmod +x bashbrew
 
       - name: Generate Jobs
         run: |
