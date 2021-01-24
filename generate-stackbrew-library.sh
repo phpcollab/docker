@@ -45,7 +45,6 @@ cat <<-EOH
 Maintainers: phpCollab Team <corretto-team@amazon.com> (@phpcollab),
              John Gasper <jtgasper3@gmail.com> (@jtgasper3)
 GitRepo: https://github.com/phpcollab/docker.git
-GitCommit: 5107e816a499c43997980241b5ae4c15bf433856
 Architectures: amd64, arm32v7, arm64v8
 EOH
 
@@ -129,7 +128,7 @@ for version; do
 			echo
 			cat <<-EOE
 				Tags: $(join ', ' "${fullAliases[@]}")
-				# GitCommit: $commit
+				GitCommit: $commit
 				Directory: $dir
 			EOE
 		done
