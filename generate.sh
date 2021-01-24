@@ -91,8 +91,8 @@ for tag in $tags; do
 						]
 						| join(" ")
 					),
-					history: ("docker history " + (.tags[0] | @sh)),
-					test: ("~/oi/test/run.sh " + (.tags[0] | @sh)),
+					history: ("docker history phpcollab/" + (.tags[0] | @sh)),
+					test: ("~/oi/test/run.sh phpcollab/" + (.tags[0] | @sh)),
 				},
 			}
 		'
