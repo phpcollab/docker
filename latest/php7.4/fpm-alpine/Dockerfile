@@ -104,9 +104,9 @@ RUN set -eux; \
     chown -R www-data:www-data wp-content; \
     chmod -R 777 wp-content
 
-VOLUME /var/www/phpcollab
-
 COPY docker-entrypoint.sh /usr/local/bin/
 
+VOLUME /var/www/phpcollab
+WORKDIR /var/www/phpcollab
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["php-fpm"]

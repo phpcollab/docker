@@ -50,11 +50,12 @@ for version; do
 				gawk -f "$jqt" Dockerfile.template
 			} > "$dir/Dockerfile"
 
-			if [ "$version" = 'beta' ]; then
-				cp -a docker-entrypoint-ng.sh "$dir/docker-entrypoint.sh"
-			else
-				cp -a docker-entrypoint.sh "$dir/"
-			fi
+			# Currently not needed
+			# if [ "$version" = 'beta' ]; then
+			# 	cp -a docker-entrypoint-ng.sh "$dir/docker-entrypoint.sh"
+			# else
+			 	cp -a docker-entrypoint.sh "$dir/"
+			# fi
 		done
 	done
 done

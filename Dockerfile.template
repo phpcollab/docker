@@ -58,7 +58,7 @@ runDeps="$( \
     apk del --no-network .build-deps
 {{ ) else ( -}}
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-    apt-mark auto '.*' > /dev/null; \
+apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
     | awk '/=>/ { print $3 }' \
@@ -117,7 +117,9 @@ RUN set -eux; \
     a2enconf remoteip; \
     # https://github.com/docker-library/wordpress/issues/383#issuecomment-507886512
     # (replace all instances of "%h" with "%a" in LogFormat)
-    find /etc/apache2 -type f -name '*.conf' -exec sed -ri 's/([[:space:]]*LogFormat[[:space:]]+"[^"]*)%h([^"]*")/\1%a\2/g' '{}' +
+    find /etc/apache2 -type f -name '*.conf' -exec sed -ri 's/([[:space:]]*LogFormat[[:space:]]+"[^"]*)%h([^"]*")/\1%a\2/g' '{}' +; \
+    sed -ri -e 's!/var/www/html!/var/www/phpcollab!g' /etc/apache2/sites-available/*.conf; \
+    sed -ri -e 's!/var/www/!/var/www/phpcollab!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 {{ ) else "" end -}}
 
 RUN set -eux; \
@@ -158,9 +160,9 @@ RUN set -eux; \
     chown -R www-data:www-data wp-content; \
     chmod -R 777 wp-content
 
-VOLUME /var/www/phpcollab
-
 COPY docker-entrypoint.sh /usr/local/bin/
 
+VOLUME /var/www/phpcollab
+WORKDIR /var/www/phpcollab
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD {{ [ if env.variant == "apache" then "apache2-foreground" else "php-fpm" end ] | @json }}

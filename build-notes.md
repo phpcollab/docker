@@ -45,7 +45,7 @@ The build process generally requires a Linux (Ubuntu) environment. It's easy to 
 1. In the container, run:
 
    ```sh
-   apt-get update
+   apt-get update -y
    apt-get install -y curl gawk git jq wget
 
    cd /tmp/code

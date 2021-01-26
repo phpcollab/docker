@@ -30,7 +30,7 @@ RUN set -ex; \
     zip \
     ; \
     # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
-    apt-mark auto '.*' > /dev/null; \
+apt-mark auto '.*' > /dev/null; \
     apt-mark manual $savedAptMark; \
     ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
     | awk '/=>/ { print $3 }' \
@@ -109,9 +109,9 @@ RUN set -eux; \
     chown -R www-data:www-data wp-content; \
     chmod -R 777 wp-content
 
-VOLUME /var/www/phpcollab
-
 COPY docker-entrypoint.sh /usr/local/bin/
 
+VOLUME /var/www/phpcollab
+WORKDIR /var/www/phpcollab
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["php-fpm"]
