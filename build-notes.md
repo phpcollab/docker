@@ -45,14 +45,12 @@ The build process generally requires a Linux (Ubuntu) environment. It's easy to 
 1. In the container, run:
 
    ```sh
-   apt-get update -y
-   apt-get install -y curl gawk git jq wget
-
-   cd /tmp/code
-   curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
-   chmod +x bashbrew
-
-   export PATH=".:$PATH"
+   apt-get update -y \
+   && apt-get install -y curl gawk git jq wget \
+   && cd /tmp/code \
+   && curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64 \
+   && chmod +x bashbrew; \
+   export PATH=".:$PATH"; \
    export GITHUB_REPOSITORY=phpcollab
    ```
 
