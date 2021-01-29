@@ -65,7 +65,6 @@ echo "Here 1: ${haveConfig}"
 
 		if ! TERM=dumb php -- <<'EOPHP'
 <?php
-<?php
 use phpCollab\Installation\Installation;
 
 error_reporting(2039);
