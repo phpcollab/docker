@@ -76,7 +76,7 @@ RUN set -eux; \
     # upstream tarballs include ./phpcollab/ so this gives us /var/www/phpcollab
     tar -xzf phpcollab.tar.gz -C /var/www/; \
     rm phpcollab.tar.gz; \
-    \
+    sed -ri -e 's!"../!$this->appRoot . "/!g' /var/www/phpcollab/classes/Installation/Installation.php;\
     # https://wordpress.org/support/article/htaccess/
     # [ ! -e /var/www/phpcollab/.htaccess ]; \
     # { \
