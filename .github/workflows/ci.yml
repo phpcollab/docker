@@ -1,0 +1,58 @@
+name: Build and Publish
+
+on:
+  push:
+
+jobs:
+  generate-jobs:
+    name: Generate the jobs
+    runs-on: ubuntu-latest
+    outputs:
+      strategy: ${{ steps.generate-jobs.outputs.strategy }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Generate Jobs
+        id: generate-jobs
+        run: |
+          curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
+          chmod +x bashbrew
+          export GITHUB_REPOSITORY=phpcollab
+          export PATH=".:$PATH"
+          strategy="$(./generate.sh)"
+          jq . <<<"$strategy" # sanity check / debugging aid
+          echo "::set-output name=strategy::$strategy"
+
+  build:
+    name: ${{ matrix.name }}
+    needs: generate-jobs
+    strategy: ${{ fromJson(needs.generate-jobs.outputs.strategy) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Prepare Environment
+        run: ${{ matrix.runs.prepare }}
+      - name: Build ${{ matrix.name }}
+        run: ${{ matrix.runs.build }}
+      # - name: History ${{ matrix.name }}
+      #   run: ${{ matrix.runs.history }}
+      # - name: Test ${{ matrix.name }}
+      #   run: ${{ matrix.runs.test }}
+      - name: '"docker images"'
+        run: ${{ matrix.runs.images }}
