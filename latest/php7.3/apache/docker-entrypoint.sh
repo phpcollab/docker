@@ -59,46 +59,82 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 			haveConfig=1
 		fi
 	done
-echo "Here 1: ${haveConfig}"
+
 	# only touch "includes/settings.php" if we have environment-supplied configuration values
 	if [ "$haveConfig" ]; then
+		while ! curl -s ${PHPCOLLAB_DB_HOST}:3306 > /dev/null; do
+			echo waiting for mysql to start
+			sleep 3;
+		done
+		sleep 3;
 
 		if ! TERM=dumb php -- <<'EOPHP'
 <?php
-
-include_once '/var/www/phpcollab/includes/library.php';
-require_once '/var/www/phpcollab/classes/Installation/Installation.php';
 use phpCollab\Installation\Installation;
 
-$databaseInfo = [
-	"dbServer" => getenv('PHPCOLLAB_DB_HOST'),
-	"dbUsername" => getenv('PHPCOLLAB_DB_USER'),
-	"dbPassword" => getenv('PHPCOLLAB_DB_PASSWORD'),
-	"dbName" => getenv('PHPCOLLAB_DB_NAME'),
-	"dbType" => getenv('PHPCOLLAB_DB_USER')
-];
+error_reporting(2039);
 
-$appRoot = dirname(dirname(__FILE__));
-$installation = new Installation($databaseInfo, $appRoot);
-$installation->setup([]);
+define('APP_ROOT', dirname(__FILE__));
 
-$maxTries = 10;
-do {
-	$error = false;
-	try {
-		$installation->setup([]);
-	} catch (Exception $e) {
-    	fwrite($stderr, 'Caught exception: ' .  $e->getMessage() . "\n");
-		$error = true;
-	}
-	if ($error) {
-		--$maxTries;
-		if ($maxTries <= 0) {
-			exit(1);
-		}
-		sleep(3);
-	}
-} while ($mysql->connect_error);
+require_once dirname(__FILE__) . '/vendor/autoload.php';
+
+try {
+    $settingsData = array(
+        "dbServer" => getenv('PHPCOLLAB_DB_HOST'),
+        "dbUsername" => getenv('PHPCOLLAB_DB_USER'),
+        "dbPassword" => getenv('PHPCOLLAB_DB_PASSWORD'),
+        "dbName" => getenv('PHPCOLLAB_DB_NAME'),
+        "dbType" => getenv('PHPCOLLAB_DB_TYPE'),
+        "siteUrl" => getenv('PHPCOLLAB_SITE_URL'),
+        "adminEmail" => getenv('PHPCOLLAB_ADMIN_EMAIL'),
+        "adminPassword" => bin2hex(openssl_random_pseudo_bytes(5)),
+        "appRoot" => APP_ROOT
+    );
+
+    $installation = new Installation([
+        'dbServer' => $settingsData["dbServer"],
+        'dbUsername' => $settingsData["dbUsername"],
+        'dbPassword' => $settingsData["dbPassword"],
+        'dbName' => $settingsData["dbName"],
+        'dbType' => $settingsData["dbType"],
+    ], $settingsData["appRoot"]);
+
+    echo <<<SETUP_INTRO
+Installing \e[1;34mphpCollab\e[0m...
+
+SETUP_INTRO;
+
+
+    if ($installation->setup($settingsData)) {
+        // If setup returns true, then output the password to the CLI
+        echo <<<ADMIN_PW_OUTPUT
+\e[0;32m==================
+| ADMIN PASSWORD |
+==================\e[0m
+🔒 The admin password has been set to: {$settingsData["adminPassword"]}
+==================
+
+ADMIN_PW_OUTPUT;
+    };
+} catch (PDOException $e) {
+    echo <<<EXCEPTION
+\e[0;31m==================
+❗️ ERROR: Database
+==================
+{$e}\e[0m
+
+EXCEPTION;
+    return false;
+} catch (Exception $e) {
+    echo <<<EXCEPTION
+\e[0;31m==================
+❗️ ERROR: Setup
+==================
+{$e}\e[0m
+
+EXCEPTION;
+    return false;
+}
 ?>
 EOPHP
 		then

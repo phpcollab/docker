@@ -59,9 +59,14 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 			haveConfig=1
 		fi
 	done
-echo "Here 1: ${haveConfig}"
+
 	# only touch "includes/settings.php" if we have environment-supplied configuration values
 	if [ "$haveConfig" ]; then
+		while ! curl -s ${PHPCOLLAB_DB_HOST}:3306 > /dev/null; do
+			echo waiting for mysql to start
+			sleep 3;
+		done
+		sleep 3;
 
 		if ! TERM=dumb php -- <<'EOPHP'
 <?php
@@ -88,7 +93,7 @@ try {
 
     $installation = new Installation([
         'dbServer' => $settingsData["dbServer"],
-        'dbUsername' => $settingsData["dbLogin"],
+        'dbUsername' => $settingsData["dbUsername"],
         'dbPassword' => $settingsData["dbPassword"],
         'dbName' => $settingsData["dbName"],
         'dbType' => $settingsData["dbType"],
