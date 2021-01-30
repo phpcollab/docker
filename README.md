@@ -1,6 +1,6 @@
 # phpCollab Docker Image
 
-This repository host the source to product a Docker Image for [phpCollab](https://www.phpcollab.com/).
+This repository host the source to product a Docker Image for [phpCollab](https://phpcollab.com/?utm_source=dockerhub&utm_medium=cpc&utm_campaign=docker_hub).
 
 ## ... via [`docker stack deploy`](https://docs.docker.com/engine/reference/commandline/stack_deploy/) or [`docker-compose`](https://github.com/docker/compose)
 
@@ -38,9 +38,3 @@ volumes:
   phpcollab:
   db:
 ```
-
-Outstanding issues:
-
-- Support Env config
-- Fix up entry point
-- Setup Error: `Attention: Erase the file setup.php!! We can not remove the file, it's not writtable. Please delete manually.`
