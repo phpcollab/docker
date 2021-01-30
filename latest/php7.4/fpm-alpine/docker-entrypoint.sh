@@ -81,10 +81,10 @@ require_once dirname(__FILE__) . '/vendor/autoload.php';
 try {
     $settingsData = array(
         "dbServer" => getenv('PHPCOLLAB_DB_HOST'),
-        "dbUsername" => getenv('PHPCOLLAB_DB_USER'),
+        "%dbLogin%" => getenv('PHPCOLLAB_DB_USER'),
         "dbPassword" => getenv('PHPCOLLAB_DB_PASSWORD'),
         "dbName" => getenv('PHPCOLLAB_DB_NAME'),
-        "dbType" => getenv('PHPCOLLAB_DB_TYPE'),
+        "databaseType" => getenv('PHPCOLLAB_DB_TYPE'),
         "siteUrl" => getenv('PHPCOLLAB_SITE_URL'),
         "adminEmail" => getenv('PHPCOLLAB_ADMIN_EMAIL'),
         "adminPassword" => bin2hex(openssl_random_pseudo_bytes(5)),
@@ -93,10 +93,10 @@ try {
 
     $installation = new Installation([
         'dbServer' => $settingsData["dbServer"],
-        'dbUsername' => $settingsData["dbUsername"],
+        'dbUsername' => $settingsData["%dbLogin%"],
         'dbPassword' => $settingsData["dbPassword"],
         'dbName' => $settingsData["dbName"],
-        'dbType' => $settingsData["dbType"],
+        'dbType' => $settingsData["databaseType"],
     ], $settingsData["appRoot"]);
 
     echo <<<SETUP_INTRO
