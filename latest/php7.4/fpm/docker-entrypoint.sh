@@ -51,6 +51,9 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 		PHPCOLLAB_DB_PASSWORD
 		PHPCOLLAB_DB_NAME
 		PHPCOLLAB_DB_TYPE
+		PHPCOLLAB_DB_TYPE
+    PHPCOLLAB_SITE_URL
+    PHPCOLLAB_ADMIN_EMAIL
 	)
 	haveConfig=
 	for e in "${envs[@]}"; do
@@ -101,22 +104,51 @@ try {
     ], $settingsData["appRoot"]);
 
     echo <<<SETUP_INTRO
-Installing \e[1;34mphpCollab\e[0m...
+Welcome to \e[1;32m
+        _            _____      _ _       _
+       | |          / ____|    | | |     | |
+  _ __ | |__  _ __ | |     ___ | | | __ _| |__
+ | '_ \| '_ \| '_ \| |    / _ \| | |/ _` | '_ \
+ | |_) | | | | |_) | |___| (_) | | | (_| | |_) |
+ | .__/|_| |_| .__/ \_____\___/|_|_|\__,_|_.__/
+ | |         | |
+ |_|         |_| \e[0m
 
 SETUP_INTRO;
 
+    /**
+     * Sanity checks to make sure we are ready to install
+     *
+     * Checking for an existing settings.php file
+     */
+    if (!file_exists($settingsData["appRoot"] . "/includes/settings.php")) {
+      if ($installation->setup($settingsData)) {
+          // If setup returns true, then output the password to the CLI
+          echo <<<ADMIN_PW_OUTPUT
+  \e[0;32m==================
+  | ADMIN PASSWORD |
+  ==================\e[0m
+  🔒 The admin password has been set to: {$settingsData["adminPassword"]}
+  ==================
 
-    if ($installation->setup($settingsData)) {
-        // If setup returns true, then output the password to the CLI
-        echo <<<ADMIN_PW_OUTPUT
-\e[0;32m==================
-| ADMIN PASSWORD |
-==================\e[0m
-🔒 The admin password has been set to: {$settingsData["adminPassword"]}
-==================
+  ADMIN_PW_OUTPUT;
+      };
+    } else {
+        echo <<<EXISTING_INSTALL
 
-ADMIN_PW_OUTPUT;
-    };
+
+\e[1;33m=====================================================================================
+ ⚠️  WARNING: settings.php file found
+    There appears to already be an includes/settings.php file.
+    If you have not previously installed phpCollab, please try again.
+    For additional help, refer to the README @ https://github.com/phpcollab/docker
+=====================================================================================\e[0m
+
+EXISTING_INSTALL;
+
+    }
+
+
 } catch (PDOException $e) {
     echo <<<EXCEPTION
 \e[0;31m==================
@@ -147,10 +179,18 @@ EOPHP
 		fi
 	fi
 
-	# now that we're definitely done writing configuration, let's clear out the relevant envrionment variables (so that stray "phpinfo()" calls don't leak secrets from our code)
+	# now that we're definitely done writing configuration, let's clear out the relevant environment variables (so that stray "phpinfo()" calls don't leak secrets from our code)
 	for e in "${envs[@]}"; do
 		unset "$e"
 	done
+
+  # Delete the phpCollab installation directory
+  if [[ -d "/var/www/phpcollab/installation" ]]
+  then
+     rm -rf /var/www/phpcollab/installation
+     echo "Deleted installation directory"
+  fi
+
 fi
 
 exec "$@"
