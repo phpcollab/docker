@@ -11,7 +11,7 @@ version: "3.1"
 
 services:
   phpcollab:
-    image: phpcollab/phpcollab
+    image: phpcollab/phpcollab:latest
     restart: always
     ports:
       - 8080:80
@@ -20,6 +20,9 @@ services:
       PHPCOLLAB_DB_USER: exampleuser
       PHPCOLLAB_DB_PASSWORD: examplepass
       PHPCOLLAB_DB_NAME: exampledb
+      PHPCOLLAB_DB_TYPE: mysql
+      PHPCOLLAB_SITE_URL: http://localhost:8080
+      PHPCOLLAB_ADMIN_EMAIL: admin@example.com
     volumes:
       - phpcollab:/var/www/phpcollab
 
