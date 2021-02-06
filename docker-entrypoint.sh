@@ -51,9 +51,8 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 		PHPCOLLAB_DB_PASSWORD
 		PHPCOLLAB_DB_NAME
 		PHPCOLLAB_DB_TYPE
-		PHPCOLLAB_DB_TYPE
-    PHPCOLLAB_SITE_URL
-    PHPCOLLAB_ADMIN_EMAIL
+                PHPCOLLAB_SITE_URL
+                PHPCOLLAB_ADMIN_EMAIL
 	)
 	haveConfig=
 	for e in "${envs[@]}"; do
@@ -91,7 +90,7 @@ try {
         "siteUrl" => getenv('PHPCOLLAB_SITE_URL'),
         "adminEmail" => getenv('PHPCOLLAB_ADMIN_EMAIL'),
         "adminPassword" => bin2hex(openssl_random_pseudo_bytes(5)),
-		"loginMethod" => "crypt",
+        "loginMethod" => "crypt",
         "appRoot" => APP_ROOT
     );
 
@@ -131,24 +130,21 @@ SETUP_INTRO;
   🔒 The admin password has been set to: {$settingsData["adminPassword"]}
   ==================
 
-  ADMIN_PW_OUTPUT;
+ADMIN_PW_OUTPUT;
       };
     } else {
         echo <<<EXISTING_INSTALL
 
 
 \e[1;33m=====================================================================================
- ⚠️  WARNING: settings.php file found
+    INFO: settings.php file found
     There appears to already be an includes/settings.php file.
-    If you have not previously installed phpCollab, please try again.
+    If you have not previously installed phpCollab, please do not bind mount the settings.php.
     For additional help, refer to the README @ https://github.com/phpcollab/docker
 =====================================================================================\e[0m
 
 EXISTING_INSTALL;
-
     }
-
-
 } catch (PDOException $e) {
     echo <<<EXCEPTION
 \e[0;31m==================
@@ -157,7 +153,7 @@ EXISTING_INSTALL;
 {$e}\e[0m
 
 EXCEPTION;
-    return false;
+    exit(1);
 } catch (Exception $e) {
     echo <<<EXCEPTION
 \e[0;31m==================
@@ -166,16 +162,23 @@ EXCEPTION;
 {$e}\e[0m
 
 EXCEPTION;
-    return false;
+    exit(2);
 }
 ?>
-EOPHP
-			rm -rf installation/
+EOPHP	
 		then
 			echo >&2
 			echo >&2 "WARNING: unable to establish a database connection to '$PHPCOLLAB_DB_HOST'"
+			echo >&2 '  or initializing phpCollab database'
 			echo >&2 '  continuing anyways (which might have unexpected results)'
 			echo >&2
+		else
+			# Delete the phpCollab installation directory
+			if [[ -d "/var/www/phpcollab/installation" ]]
+			then
+				rm -rf /var/www/phpcollab/installation
+  				echo "Deleted installation directory"
+			fi
 		fi
 	fi
 
@@ -183,14 +186,6 @@ EOPHP
 	for e in "${envs[@]}"; do
 		unset "$e"
 	done
-
-  # Delete the phpCollab installation directory
-  if [[ -d "/var/www/phpcollab/installation" ]]
-  then
-     rm -rf /var/www/phpcollab/installation
-     echo "Deleted installation directory"
-  fi
-
 fi
 
 exec "$@"
