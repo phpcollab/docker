@@ -126,7 +126,7 @@ RUN set -eux; \
     version={{ .upstream | @sh }}; \
     sha1={{ .sha1 | @sh }}; \
     \
-    curl -o phpcollab.tar.gz -fL "https://phpcollab.com/phpcollab-v$version.tar.gz"; \
+    curl -o phpcollab.tar.gz -fL "https://github.com/phpcollab/phpcollab/releases/download/v$version/phpcollab-v$version.tar.gz"; \
     echo "$sha1 *phpcollab.tar.gz" | sha1sum -c -; \
     \
     # upstream tarballs include ./phpcollab/ so this gives us /var/www/phpcollab
