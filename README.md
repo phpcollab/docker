@@ -24,7 +24,9 @@ services:
       PHPCOLLAB_SITE_URL: http://localhost:8080
       PHPCOLLAB_ADMIN_EMAIL: admin@example.com
     volumes:
-      - phpcollab:/var/www/phpcollab
+      - phpcollab_files:/var/www/phpcollab/files
+      - phpcollab_logos_clients:/var/www/phpcollab/logo_clients
+      - phpcollab_settings:/var/www/phpcollab/includes/settings.php
 
   db:
     image: mysql:5.7
@@ -38,6 +40,8 @@ services:
       - db:/var/lib/mysql
 
 volumes:
-  phpcollab:
+  phpcollab_files:
+  phpcollab_logos_clients:
+  phpcollab_settings:
   db:
 ```
