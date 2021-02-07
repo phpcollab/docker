@@ -48,8 +48,8 @@ RUN { \
 
 
 RUN set -eux; \
-    version='2.8.1'; \
-    sha1='1f0a41545a28d12e7364167544c55ade7b7e7814'; \
+    version='2.8.2'; \
+    sha1='0ba2767ea50611c5812f715a35b07fb80c8c118b'; \
     \
     curl -o phpcollab.tar.gz -fL "https://github.com/phpcollab/phpcollab/releases/download/v$version/phpcollab-v$version.tar.gz"; \
     echo "$sha1 *phpcollab.tar.gz" | sha1sum -c -; \
