@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# https://wordpress.org/about/requirements/
-# https://wordpress.org/support/update-php/#before-you-update-your-php-version
 defaultPhpVersion='php7.4'
 defaultVariant='apache'
 
@@ -41,6 +39,7 @@ dirCommit() {
 
 cat <<-EOH
 Maintainers: phpCollab Team (@phpcollab),
+             Jeff Sittler (@mindblender),
              John Gasper <jtgasper3@gmail.com> (@jtgasper3)
 GitRepo: https://github.com/phpcollab/docker.git
 Architectures: amd64, arm32v7, arm64v8

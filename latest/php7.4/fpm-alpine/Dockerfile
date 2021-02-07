@@ -17,26 +17,8 @@ RUN set -eux; \
 
 # install the PHP extensions we need (https://make.wordpress.org/hosting/handbook/handbook/server-environment/#php-extensions)
 RUN set -ex; \
-    \
-    apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    libpng-dev \
-    libzip-dev \
-    ; \
     docker-php-ext-install -j "$(nproc)" \
-    pdo pdo_mysql mysqli \
-    zip \
-    ; \
-    runDeps="$( \
-    scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
-    | tr ',' '\n' \
-    | sort -u \
-    | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
-    )"; \
-    apk add --no-network --virtual .wordpress-phpexts-rundeps $runDeps; \
-    apk del --no-network .build-deps
+    pdo pdo_mysql mysqli
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
@@ -50,10 +32,9 @@ RUN set -eux; \
     echo 'opcache.fast_shutdown=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-# https://wordpress.org/support/article/editing-wp-config-php/#configure-error-logging
+# Mirror WP Logging: https://wordpress.org/support/article/editing-wp-config-php/#configure-error-logging
 RUN { \
     # https://www.php.net/manual/en/errorfunc.constants.php
-    # https://github.com/docker-library/wordpress/issues/420#issuecomment-517839670
     echo 'error_reporting = E_ERROR | E_WARNING | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING | E_RECOVERABLE_ERROR'; \
     echo 'display_errors = Off'; \
     echo 'display_startup_errors = Off'; \
@@ -70,43 +51,23 @@ RUN set -eux; \
     version='2.8.1'; \
     sha1='1f0a41545a28d12e7364167544c55ade7b7e7814'; \
     \
-    curl -o phpcollab.tar.gz -fL "https://phpcollab.com/phpcollab-v$version.tar.gz"; \
+    curl -o phpcollab.tar.gz -fL "https://github.com/phpcollab/phpcollab/releases/download/v$version/phpcollab-v$version.tar.gz"; \
     echo "$sha1 *phpcollab.tar.gz" | sha1sum -c -; \
     \
     # upstream tarballs include ./phpcollab/ so this gives us /var/www/phpcollab
     tar -xzf phpcollab.tar.gz -C /var/www/; \
     rm phpcollab.tar.gz; \
-    sed -ri -e 's!"../!$this->appRoot . "/!g' /var/www/phpcollab/classes/Installation/Installation.php;\
-    # https://wordpress.org/support/article/htaccess/
-    # [ ! -e /var/www/phpcollab/.htaccess ]; \
-    # { \
-    # echo '# BEGIN phpcollab'; \
-    # echo ''; \
-    # echo 'RewriteEngine On'; \
-    # echo 'RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]'; \
-    # echo 'RewriteBase /'; \
-    # echo 'RewriteRule ^index\.php$ - [L]'; \
-    # echo 'RewriteCond %{REQUEST_FILENAME} !-f'; \
-    # echo 'RewriteCond %{REQUEST_FILENAME} !-d'; \
-    # echo 'RewriteRule . /index.php [L]'; \
-    # echo ''; \
-    # echo '# END phpcollab'; \
-    # } > /var/www/phpcollab/.htaccess; \
+    # Patching Installation.php setting the root (remove in v2.8.3)
+    sed -ri -e 's!"../!$this->appRoot . "/!g' /var/www/phpcollab/classes/Installation/Installation.php; \
     \
     chown -R www-data:www-data /var/www/phpcollab; \
-    # pre-create wp-content (and single-level children) for folks who want to bind-mount themes, etc so permissions are pre-created properly instead of root:root
-    # wp-content/cache: https://github.com/docker-library/wordpress/issues/534#issuecomment-705733507
-    mkdir wp-content; \
-    for dir in /var/www/phpcollab/wp-content/*/ cache; do \
-    dir="$(basename "${dir%/}")"; \
-    mkdir "wp-content/$dir"; \
-    done; \
-    chown -R www-data:www-data wp-content; \
-    chmod -R 777 wp-content
+    # Create a location for the settings volume to be mounted to, and the setting.php to be linked from 
+    mkdir -p /var/data/phpcollab; \
+    chown -R www-data:www-data /var/data/phpcollab
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
-VOLUME /var/www/phpcollab
+VOLUME ["/var/www/phpcollab/files", "/var/www/phpcollab/logo_clients", "/var/data/phpcollab"]
 WORKDIR /var/www/phpcollab
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["php-fpm"]
