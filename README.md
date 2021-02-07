@@ -26,7 +26,7 @@ services:
     volumes:
       - phpcollab_files:/var/www/phpcollab/files
       - phpcollab_logos_clients:/var/www/phpcollab/logo_clients
-      - phpcollab_settings:/var/www/phpcollab/includes/settings.php
+      - phpcollab_settings:/var/data/phpcollab
 
   db:
     image: mysql:5.7

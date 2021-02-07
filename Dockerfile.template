@@ -23,8 +23,8 @@ RUN set -eux; \
 
 # install the PHP extensions we need (https://make.wordpress.org/hosting/handbook/handbook/server-environment/#php-extensions)
 RUN set -ex; \
-docker-php-ext-install -j "$(nproc)" \
-    pdo pdo_mysql mysqli zip
+    docker-php-ext-install -j "$(nproc)" \
+    pdo pdo_mysql mysqli
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
@@ -89,11 +89,14 @@ RUN set -eux; \
     # Patching Installation.php setting the root (remove in v2.8.3)
     sed -ri -e 's!"../!$this->appRoot . "/!g' /var/www/phpcollab/classes/Installation/Installation.php; \
     \
-    chown -R www-data:www-data /var/www/phpcollab
+    chown -R www-data:www-data /var/www/phpcollab; \
+    # Create a location for the settings volume to be mounted to, and the setting.php to be linked from 
+    mkdir -p /var/data/phpcollab; \
+    chown -R www-data:www-data /var/data/phpcollab
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
-VOLUME ["/var/www/phpcollab/files", "/var/www/phpcollab/logo_clients", "/var/www/phpcollab/includes/settings.php"]
+VOLUME ["/var/www/phpcollab/files", "/var/www/phpcollab/logo_clients", "/var/data/phpcollab"]
 WORKDIR /var/www/phpcollab
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD {{ [ if env.variant == "apache" then "apache2-foreground" else "php-fpm" end ] | @json }}

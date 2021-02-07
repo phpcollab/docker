@@ -164,15 +164,17 @@ EXCEPTION;
 EXCEPTION;
     exit(2);
 }
-?>
-EOPHP	
+EOPHP
 		then
 			echo >&2
 			echo >&2 "WARNING: unable to establish a database connection to '$PHPCOLLAB_DB_HOST'"
 			echo >&2 '  or initializing phpCollab database'
-			echo >&2 '  continuing anyways (which might have unexpected results)'
+			echo >&2 '  continuing anyways (which might be fine or might have unexpected results)'
 			echo >&2
 		else
+			# Move the settings file out to the designated volume location for persistence
+			mv /var/www/phpcollab/includes/settings.php /var/data/phpcollab/settings.php
+
 			# Delete the phpCollab installation directory
 			if [[ -d "/var/www/phpcollab/installation" ]]
 			then
@@ -188,4 +190,6 @@ EOPHP
 	done
 fi
 
+# Create a symlink from the volume mountpoint to the settings file, if the settings.php file does not exists at this point in the start-up.
+[ ! -f /var/www/phpcollab/includes/settings.php ] && ln -s /var/data/phpcollab/settings.php /var/www/phpcollab/includes/settings.php
 exec "$@"
