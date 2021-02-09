@@ -18,7 +18,7 @@
 # How to use this image
 
 ```console
-$ docker run --name phpcollab --network some-network -d %%IMAGE%%
+$ docker run --name phpcollab --network some-network -d phpcollab
 ```
 
 ## Environment variables
@@ -40,7 +40,7 @@ The following environment variables are also honored for configuring your phpCol
 If you'd like to be able to access the instance from the host without the container's IP, standard port mappings can be used:
 
 ```console
-$ docker run --name some-%%REPO%% -p 8080:80 -d %%IMAGE%%
+$ docker run --name some-phpcollab -p 8080:80 -d phpcollab
 ```
 
 Then, access it via `http://localhost:8080` or `http://host-ip:8080` in a browser.
@@ -48,8 +48,8 @@ Then, access it via `http://localhost:8080` or `http://host-ip:8080` in a browse
 If you'd like to use an external database instead of a `mysql`/`postgres` container, specify the hostname and port with `PHPCOLLAB_DB_HOST` along with the password in `PHPCOLLAB_DB_PASSWORD` and the username in `PHPCOLLAB_DB_USER` (if it is something other than `root`):
 
 ```console
-$ docker run --name some-%%REPO%% -e PHPCOLLAB_DB_HOST=10.1.2.3:3306 \
-    -e PHPCOLLAB_DB_USER=... -e PHPCOLLAB_DB_PASSWORD=... -d %%IMAGE%%
+$ docker run --name some-phpcollab -e PHPCOLLAB_DB_HOST=10.1.2.3:3306 \
+    -e PHPCOLLAB_DB_USER=... -e PHPCOLLAB_DB_PASSWORD=... -d phpcollab
 ```
 
 ## Docker Secrets
@@ -57,7 +57,7 @@ $ docker run --name some-%%REPO%% -e PHPCOLLAB_DB_HOST=10.1.2.3:3306 \
 As an alternative to passing sensitive information via environment variables, `_FILE` may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in `/run/secrets/<secret_name>` files. For example:
 
 ```console
-$ docker run --name some-phpcollab -e PHPCOLLAB_DB_PASSWORD_FILE=/run/secrets/mysql-root ... -d %%IMAGE%%:tag
+$ docker run --name some-phpcollab -e PHPCOLLAB_DB_PASSWORD_FILE=/run/secrets/mysql-root ... -d phpcollab:tag
 ```
 
 Currently, this is supported for `PHPCOLLAB_DB_HOST`, `PHPCOLLAB_DB_USER`, `PHPCOLLAB_DB_PASSWORD`, `PHPCOLLAB_DB_NAME`, `PHPCOLLAB_TABLE_PREFIX`, and `PHPCOLLAB_DEBUG`<sup>1</sup>
