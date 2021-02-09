@@ -21,10 +21,12 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 {{ ) end -}}
 
-# install the PHP extensions we need (https://make.wordpress.org/hosting/handbook/handbook/server-environment/#php-extensions)
+# install the PHP extensions we need
 RUN set -ex; \
     docker-php-ext-install -j "$(nproc)" \
-    pdo pdo_mysql mysqli
+    pdo pdo_mysql mysqli \
+    && echo "post_max_size=80M" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "upload_max_filesize=20M" >> /usr/local/etc/php/conf.d/custom.ini \
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
