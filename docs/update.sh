@@ -11,6 +11,7 @@ helperDir='.template-helpers'
 #        ./update.sh tianontesting/debian tianontestingmore/golang
 #        BASHBREW_ARCH=windows-amd64 BASHBREW_ARCH_NAMESPACES='...' ./update.sh --namespace winamd64
 
+# checks for --namespace option
 forceNamespace=
 if [ "${1:-}" = '--namespace' ]; then
 	shift
@@ -18,6 +19,7 @@ if [ "${1:-}" = '--namespace' ]; then
 	shift
 fi
 
+# grabs all parameters passed in and looks for "images"
 images=( "$@" )
 if [ ${#images[@]} -eq 0 ]; then
 	images=( */ )
@@ -71,19 +73,30 @@ for image in "${images[@]}"; do
 		logoFile=
 		for f in png svg; do
 			if [ -e "$repo/logo.$f" ]; then
-				logoFile="$repo/logo.$f"
+				# The following line is the original code, which added the "repo" name in front of the logo
+				# so it was doing phpcollab/logo.png and not displaying properly in the README.md.
+				# TODO: look into why, does the update.sh need to be in the docs root?
+				# logoFile="$repo/logo.$f"
+				logoFile="logo.$f"
 				break
 			fi
 		done
+
+		# Not sure what this code is doing.  It appears that it is getting the GIT log to get the hash of the 
+		# logo commit, thus to build the image URL.
+		# TODO: Do we want this to still happen, but on our repo, instead of building a URL for the docker docs?
 		if [ "$logoFile" ]; then
-			logoCommit="$(git log -1 --format='format:%H' -- "$logoFile" 2>/dev/null || true)"
-			[ "$logoCommit" ] || logoCommit='master'
-			logoUrl="https://raw.githubusercontent.com/docker-library/docs/$logoCommit/$logoFile"
-			if [ "${logoFile##*.}" = 'svg' ]; then
-				# https://stackoverflow.com/a/16462143/433558
-				logoUrl+='?sanitize=true'
-			fi
-			logo="![logo]($logoUrl)"
+		# 	logoCommit="$(git log -1 --format='format:%H' -- "$logoFile" 2>/dev/null || true)"
+		# 	[ "$logoCommit" ] || logoCommit='master'
+		# 	logoUrl="https://raw.githubusercontent.com/docker-library/docs/$logoCommit/$logoFile"
+		# 	logoUrl="https://raw.githubusercontent.com/docker-library/docs/$logoCommit/$logoFile"
+		# logoUrl="https://github.com/phpcollab/docker/blob/fd47320ec465a55000a05153a339719704244d1a/docs/phpcollab/$logoFile"
+		# 	if [ "${logoFile##*.}" = 'svg' ]; then
+		# 		# https://stackoverflow.com/a/16462143/433558
+		# 		logoUrl+='?sanitize=true'
+		# 	fi
+			# logo="![logo]($logoUrl)"
+			logo="![logo]($logoFile)"
 		fi
 
 		stack=
@@ -92,9 +105,10 @@ for image in "${images[@]}"; do
 		if [ -f "$repo/stack.yml" ]; then
 			stack="$(cat "$repo/stack.md" 2>/dev/null || cat "$helperDir/stack.md")"
 			stackYml=$'```yaml\n'"$(cat "$repo/stack.yml")"$'\n```'
-			stackCommit="$(git log -1 --format='format:%H' -- "$repo/stack.yml" 2>/dev/null || true)"
-			[ "$stackCommit" ] || stackCommit='master'
-			stackUrl="https://raw.githubusercontent.com/docker-library/docs/$stackCommit/$repo/stack.yml"
+			# This appears to be creating a URL to the stack.yml file in the repo, like it is doing above with the logo
+			# stackCommit="$(git log -1 --format='format:%H' -- "$repo/stack.yml" 2>/dev/null || true)"
+			# [ "$stackCommit" ] || stackCommit='master'
+			# stackUrl="https://raw.githubusercontent.com/docker-library/docs/$stackCommit/$repo/stack.yml"
 		fi
 
 		compose=
@@ -111,7 +125,10 @@ for image in "${images[@]}"; do
 			deprecated+=$'\n\n'
 		fi
 
+		# TODO: Look into this code functionality.  What is it generating?  What is it pulling down?
+		# this seems to fail thus not generate anything
 		if ! partial="$("$helperDir/generate-dockerfile-links-partial.sh" "$repo")"; then
+		# if ! partial="$(cat tags.md)"; then
 			{
 				echo
 				echo "WARNING: failed to fetch tags for '$repo'; skipping!"
@@ -135,19 +152,23 @@ for image in "${images[@]}"; do
 			cat "$helperDir/template.md"
 		} > "$targetFile"
 
+		# This script hits the docker-library repo to grab the "manifest" file.  Instead, let's just call generate-stackbrew-library.sh
+		# and store the output. How do I do that? 🤔
+		# This fails to "retrieve" a repo, but not sure what it is grabbing.
 		echo '  TAGS => generate-dockerfile-links-partial.sh "'"$repo"'"'
-		if [ -z "$partial" ]; then
-			if [ -n "$ARCH_SPECIFIC_DOCS" ]; then
-				partial='**No supported tags found!**'$'\n\n''It is very likely that `%%REPO%%` does not support the currently selected architecture (`'"$BASHBREW_ARCH"'`).'
-			else
-				# opensuse, etc
-				partial='**No supported tags**'
-			fi
-		elif [ -n "$ARCH_SPECIFIC_DOCS" ]; then
-			jenkinsJobUrl="https://doi-janky.infosiftr.net/job/multiarch/job/$BASHBREW_ARCH/job/$repo/"
-			jenkinsImageUrl="https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/$BASHBREW_ARCH/job/$repo.svg?label=%%IMAGE%%%20%20build%20job"
-			partial+=$'\n\n''[![%%IMAGE%% build status badge]('"$jenkinsImageUrl"')]('"$jenkinsJobUrl"')'
-		fi
+# This is failing...
+		# if [ -z "$partial" ]; then
+		# 	if [ -n "$ARCH_SPECIFIC_DOCS" ]; then
+		# 		partial='**No supported tags found!**'$'\n\n''It is very likely that `%%REPO%%` does not support the currently selected architecture (`'"$BASHBREW_ARCH"'`).'
+		# 	else
+		# 		# opensuse, etc
+		# 		partial='**No supported tags**'
+		# 	fi
+		# elif [ -n "$ARCH_SPECIFIC_DOCS" ]; then
+		# 	jenkinsJobUrl="https://doi-janky.infosiftr.net/job/multiarch/job/$BASHBREW_ARCH/job/$repo/"
+		# 	jenkinsImageUrl="https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/$BASHBREW_ARCH/job/$repo.svg?label=%%IMAGE%%%20%20build%20job"
+		# 	partial+=$'\n\n''[![%%IMAGE%% build status badge]('"$jenkinsImageUrl"')]('"$jenkinsJobUrl"')'
+		# fi
 		replace_field "$targetFile" 'TAGS' "$partial"
 
 		echo '  ARCHES => arches.sh "'"$repo"'"'
@@ -158,8 +179,10 @@ for image in "${images[@]}"; do
 		echo '  CONTENT => '"$repo"'/content.md'
 		replace_field "$targetFile" 'CONTENT' "$(cat "$repo/content.md")"
 
-		echo '  VARIANT => variant.sh'
-		replace_field "$targetFile" 'VARIANT' "$("$helperDir/variant.sh" "$repo")"
+		# What are the variants?
+		# echo '  VARIANT => variant.sh'
+		# replace_field "$targetFile" 'VARIANT' "$("$helperDir/variant.sh" "$repo")"
+		replace_field "$targetFile" 'VARIANT' ""
 
 		# has to be after CONTENT because it's contained in content.md
 		echo "  LOGO => $logo"

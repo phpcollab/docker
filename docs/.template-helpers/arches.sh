@@ -10,7 +10,8 @@ fi
 
 # if we haven't set BASHBREW_LIBRARY explicitly (like Jenkins does, for example), don't trust the local library
 if [ -z "${BASHBREW_LIBRARY:-}" ]; then
-	repo="https://github.com/docker-library/official-images/raw/master/library/$repo"
+	repo="https://raw.githubusercontent.com/phpcollab/docker/docker-docs/$repo"
+	# repo="https://github.com/docker-library/official-images/raw/master/library/$repo"
 fi
 
 bashbrew cat --format '
