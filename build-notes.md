@@ -140,9 +140,6 @@ Example files:
 
 ## Documentation
 
-To generate the README.md file, perform the same steps in [Local Build: One-time Setup](#one-time-setup) through step 2.  Then run `./update.sh docs` and the README.md file should get generated.
+To generate the `docs/README.md` file, perform the same steps in [Local Build: One-time Setup](#one-time-setup) through step 2.
 
-Optionally:
-
-- run `./docs/markdownfmt.sh -l docs` to verify whether format of your markdown files is compliant to tianon/markdownfmt. In case you see any file names, markdownfmt detected some issues, which might result in a failed build during continuous integration. run `./docs/markdownfmt.sh -d docs` to see a diff of changes required to pass.
-    
+Then run `/docs/update.sh` and the `docs/README.md` file should get generated.
