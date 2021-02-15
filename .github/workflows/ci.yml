@@ -57,3 +57,22 @@ jobs:
       #   run: ${{ matrix.runs.test }}
       - name: '"docker images"'
         run: ${{ matrix.runs.images }}
+
+  docs:
+    name: Merge and Update Docs
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Merge
+        run: docs/update.sh
+
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: phpcollab/phpcollab
+          readme-filepath: docs/README.md
