@@ -137,3 +137,9 @@ Example files:
   }
   ```
   > Note: Beta refers to the Docker image being beta (new entrypoint, configs, etc) and not necessarily the phpCollab deployment itself.
+
+## Documentation
+
+To generate the `docs/README.md` file, perform the same steps in [Local Build: One-time Setup](#one-time-setup) through step 2.
+
+Then run `/docs/update.sh` and the `docs/README.md` file should get generated.

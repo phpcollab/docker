@@ -1,0 +1,1 @@
+phpCollab utilizes organizations, projects, tasks, file uploads,and themes.
