@@ -68,7 +68,7 @@ for image in "${images[@]}"; do
 		done
 
 		if [ "$logoFile" ]; then
-			logo="![logo]($logoFile)"
+			logo="![logo](https://raw.githubusercontent.com/phpcollab/docker/master/docs/logo.png)"
 		fi
 		#######
 		# END LOGO
