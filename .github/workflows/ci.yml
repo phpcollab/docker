@@ -72,7 +72,7 @@ jobs:
           chmod +x bashbrew
           export GITHUB_REPOSITORY=phpcollab
           export PATH=".:$PATH"
-          docs/update.sh
+          docs/update.sh phpcollab
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v2
