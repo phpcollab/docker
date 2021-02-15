@@ -67,7 +67,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Merge
-        run: docs/update.sh
+        run: |
+          curl -o bashbrew https://doi-janky.infosiftr.net/job/bashbrew/job/master/lastSuccessfulBuild/artifact/bashbrew-amd64
+          chmod +x bashbrew
+          export GITHUB_REPOSITORY=phpcollab
+          export PATH=".:$PATH"
+          docs/update.sh
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v2
