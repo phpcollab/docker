@@ -28,9 +28,7 @@ jobs:
   build:
     name: ${{ matrix.name }}
     needs: generate-jobs
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.generate-jobs.outputs.strategy).matrix }}
+    strategy: ${{ fromJson(needs.generate-jobs.outputs.strategy) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
