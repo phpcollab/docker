@@ -1,6 +1,6 @@
 # What is phpCollab?
 
-[phpCollab](https:/phpcollab.com?utm_source=docker_hub&utm_medium=cpc&utm_campaign=docker_image) is a free and open source project management tool and content management system (CMS) using PHP and MySQL/PostgresSQL, which runs on a web hosting service. Features include task management, file versioning, client area, and much more.
+[phpCollab](https://phpcollab.com?utm_source=docker_hub&utm_medium=cpc&utm_campaign=docker_image) is a free and open source project management tool and content management system (CMS) using PHP and MySQL/PostgresSQL, which runs on a web hosting service. Features include task management, file versioning, client area, and much more.
 
 %%LOGO%%
 
