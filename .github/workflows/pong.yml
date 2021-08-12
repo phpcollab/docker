@@ -13,5 +13,6 @@ jobs:
         run: |
           curl -X POST https://api.github.com/repos/phpcollab/phpcollab/dispatches \
           -H 'Accept: application/vnd.github.v3+json' \
-          -u ${{ secrets.ACCESS_TOKEN }} \
+          -H "Content-Type:application/json" \
+          -H "Authorization: token ${{ secrets.JS_ACCESS_TOKEN }}" \
           --data '{"event_type": "pong", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
