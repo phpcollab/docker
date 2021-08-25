@@ -87,6 +87,7 @@ try {
         "dbPassword" => getenv('PHPCOLLAB_DB_PASSWORD'),
         "dbName" => getenv('PHPCOLLAB_DB_NAME'),
         "databaseType" => getenv('PHPCOLLAB_DB_TYPE'),
+	'tablePrefix' => "docker_",
         "siteUrl" => getenv('PHPCOLLAB_SITE_URL'),
         "adminEmail" => getenv('PHPCOLLAB_ADMIN_EMAIL'),
         "adminPassword" => bin2hex(openssl_random_pseudo_bytes(5)),
@@ -100,6 +101,7 @@ try {
         'dbPassword' => $settingsData["dbPassword"],
         'dbName' => $settingsData["dbName"],
         'dbType' => $settingsData["databaseType"],
+	'tablePrefix' => $settingsData["tablePrefix"]
     ], $settingsData["appRoot"]);
 
     echo <<<SETUP_INTRO
