@@ -2,8 +2,8 @@
   "latest": {
     "phpVersions": ["7.4", "7.3"],
     "sha1": "0ba2767ea50611c5812f715a35b07fb80c8c118b",
-    "upstream": "2.9.0",
+    "upstream": "2.10.3",
     "variants": ["apache", "fpm", "fpm-alpine"],
-    "version": "2.9.0"
+    "version": "2.10.3"
   }
 }
