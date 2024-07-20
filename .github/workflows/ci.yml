@@ -1,6 +1,9 @@
 name: Build and Publish
 
 on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '0 0 1 * *' # once a month, on the first day at 00:00 UTC
   push:
     branches: [master]
 
